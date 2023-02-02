@@ -1,0 +1,81 @@
+{
+    "widgets": [
+        {
+            "height": 6,
+            "width": 6,
+            "y": 0,
+            "x": 0,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/KinesisAnalytics", "numRecordsOutPerSecond", "Task", "FileReader", "TaskOperator", "FileReader", "Application", "temperatures" ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "title": "FileReader",
+                "region": "eu-west-1",
+                "period": 30,
+                "stat": "Sum"
+            }
+        },
+
+        {
+            "height": 6,
+            "width": 6,
+            "y": 0,
+            "x": 12,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/KinesisAnalytics", "numRecordsInPerSecond", "Task", "Parser", "TaskOperator", "Parser", "Application", "temperaturese" ],
+                    [ ".", "numRecordsOutPerSecond", ".", ".", ".", ".", ".", "." ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "eu-west-1",
+                "stat": "Sum",
+                "period": 30,
+                "title": "Joiner"
+            }
+        },
+
+        {
+            "height": 6,
+            "width": 6,
+            "y": 0,
+            "x": 12,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/KinesisAnalytics", "numRecordsInPerSecond", "Task", "Aggregator", "TaskOperator", "Aggregator", "Application", "temperaturese" ],
+                    [ ".", "numRecordsOutPerSecond", ".", ".", ".", ".", ".", "." ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "eu-west-1",
+                "stat": "Sum",
+                "period": 30,
+                "title": "Joiner"
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 0,
+            "x": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/KinesisAnalytics", "numRecordsOutPerSecond", "Task", "Extractor", "TaskOperator", "Extractor", "Application", "temperatures" ],
+                    [ ".", "numRecordsInPerSecond", ".", ".", ".", ".", ".", "." ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "eu-west-1",
+                "stat": "Sum",
+                "period": 30,
+                "title": "Extractor"
+            }
+        }
+    ]
+}

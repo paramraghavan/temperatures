@@ -1,0 +1,31 @@
+digraph G {
+
+//  dot topology -otopology.png -Tpng
+
+node [style=filled, fillcollor=plum1, shape=ellipse, fontsize=16, color=black];
+edge [fontsize=10, color=blue4, fontcolor=blue4, penwidth=2.0];
+
+root [shape=point, style=invis];
+
+FileReader [label="FileReader", fillcolor=cyan];
+
+
+Parser [label="Parser", fillcolor=palegoldenrod];
+
+
+Aggregator [label="Aggregator", fillcolor=palegoldenrod];
+
+
+Reporter [label="Reporter", fillcolor=plum1];
+
+
+root -> FileReader [ style=invis];
+
+FileReader -> Parser [label="   LinesOfText\n   <LineOfText>\n   Rebalance", penwidth=3];
+Parser -> Aggregator [label="   ParsedRecords\n   <ParsedRecord>\n   Keyed", penwidth=3];
+Aggregator -> Reporter [label="   Results\n   <Result>\n   Rebalance", penwidth=3];
+
+
+
+
+}

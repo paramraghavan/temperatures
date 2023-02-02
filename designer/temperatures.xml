@@ -1,0 +1,20 @@
+<root>
+
+    <topology  name="temperatures"  basePkg="com.temperatures"  group-id="sp"  artifact="temperatures" srcProject="temperatures">
+
+        <source  name="FileReader"  emitsTo="LinesOfText"  emitsTypeRef="LineOfText"  penwidth="3" />
+
+        <process  name="Parser"  readsFrom="LinesOfText"  partitioned="false"  emitsTo="ParsedRecords"  emitsTypeRef="ParsedRecord"  penwidth="3"  hasOperatorState="false" />
+
+        <process  name="Aggregator"  readsFrom="ParsedRecords"  partitioned="true"  emitsTo="Results"  emitsTypeRef="Result"  penwidth="3"  hasOperatorState="false" />
+
+        <sink  name="Reporter"  readsFrom="Results"  hasOperatorState="false" />
+
+        <type  name="LineOfText" />
+        <type  name="ParsedRecord" />
+        <type  name="Result" />
+
+    </topology>
+
+
+</root>

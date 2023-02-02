@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+        
+    <topology appDir="com/temperatures" appPkg="com.temperatures" artifact="temperatures" basePkg="com.temperatures" cargoDir="com/temperatures/cargo" cargoPkg="com.temperatures.cargo" group-id="sp" keyDir="com/temperatures/key" keyPkg="com.temperatures.key" logicDir="com/temperatures/logic" logicPkg="com.temperatures.logic" name="temperatures" srcProject="temperatures" stateDir="com/temperatures/state" statePkg="com.temperatures.state" streamingJobJava="StreamingJob">
+                
+        <source emitsPackage="com.temperatures.cargo" emitsTo="LinesOfText" emitsType="LineOfText" emitsTypeRef="LineOfText" hasOperatorState="false" id="FileReader" name="FileReader" nodeType="source" penwidth="3" sourceJava="FileReaderSource" sourceState="FileReaderSourceCheckpointItem"/>
+                
+        <process broadcastType="null" emitsPackage="com.temperatures.cargo" emitsTo="ParsedRecords" emitsType="ParsedRecord" emitsTypeRef="ParsedRecord" hasOperatorState="false" id="Parser" itemJava="ParserProcessKeyState" keyType="LinesOfTextKey" name="Parser" nodeType="process" operatorVar="operator_Parser" partitioned="false" penwidth="3" processJava="ParserProcess" processState="ParserProcessCheckpointItem" readsFrom="LinesOfText" readsPackage="com.temperatures.cargo" readsType="LineOfText" selectorJava="LinesOfTextKeySelector" superclass="ProcessFunction&lt;LineOfText, ParsedRecord&gt;"/>
+                
+        <process broadcastType="null" emitsPackage="com.temperatures.cargo" emitsTo="Results" emitsType="Result" emitsTypeRef="Result" hasOperatorState="false" id="Aggregator" itemJava="AggregatorProcessKeyState" keyType="ParsedRecordsKey" name="Aggregator" nodeType="process" operatorVar="operator_Aggregator" partitioned="true" penwidth="3" processJava="AggregatorProcess" processState="AggregatorProcessCheckpointItem" readsFrom="ParsedRecords" readsPackage="com.temperatures.cargo" readsType="ParsedRecord" selectorJava="ParsedRecordsKeySelector" superclass="KeyedProcessFunction&lt;ParsedRecordsKey, ParsedRecord, Result&gt;">
+            <keyState/>
+            <partition selectorJava="ParsedRecordsKeySelector"/>
+        </process>
+                
+        <sink hasOperatorState="false" id="Reporter" name="Reporter" nodeType="sink" readsFrom="Results" readsPackage="com.temperatures.cargo" readsType="Result" sinkJava="ReporterSink" sinkState="ReporterSinkCheckpointItem" sinkVar="sink_Reporter"/>
+                
+        <type beanJava="LineOfText" id="LineOfText" name="LineOfText" package="com.temperatures.cargo">
+            <typeImpl/>
+        </type>
+                
+        <type beanJava="ParsedRecord" id="ParsedRecord" name="ParsedRecord" package="com.temperatures.cargo">
+            <typeImpl/>
+        </type>
+                
+        <type beanJava="Result" id="Result" name="Result" package="com.temperatures.cargo">
+            <typeImpl/>
+        </type>
+            
+        <stream broadcast="false" from="FileReader" jobVar="operator_FileReader" keyed="false" kind="Rebalance" name="LinesOfText" package="com.temperatures.cargo" penwidth="3" to="Parser" type="LineOfText" typeRef="LineOfText"/>
+        <stream broadcast="false" from="Parser" jobVar="operator_Parser" keyed="true" kind="Keyed" name="ParsedRecords" package="com.temperatures.cargo" penwidth="3" to="Aggregator" type="ParsedRecord" typeRef="ParsedRecord"/>
+        <stream broadcast="false" from="Aggregator" jobVar="operator_Aggregator" keyed="false" kind="Rebalance" name="Results" package="com.temperatures.cargo" penwidth="3" to="Reporter" type="Result" typeRef="Result"/>
+    </topology>
+    
+</root>
+
