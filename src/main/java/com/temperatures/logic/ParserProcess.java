@@ -2,6 +2,7 @@ package com.temperatures.logic;
 
 // Begin imports
 
+import com.temperatures.Helper;
 import org.apache.flink.api.common.state.ListState;
 import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.api.common.state.ValueState;
@@ -71,8 +72,8 @@ public class ParserProcess extends ProcessFunction<LineOfText, ParsedRecord>  {
 		//     collector.collect( obj );
 
 		// Begin process logic
-
-
+		ParsedRecord parsedRecord = Helper.parseRecord(value);
+		collector.collect(parsedRecord);
 		// End process logic
 		
 	}

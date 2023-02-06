@@ -18,6 +18,9 @@ import com.temperatures.state.FileReaderSourceCheckpointItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 // End imports
 
 public class FileReaderSource extends RichParallelSourceFunction<LineOfText> implements ParallelSourceFunction<LineOfText>  {
@@ -29,7 +32,11 @@ public class FileReaderSource extends RichParallelSourceFunction<LineOfText> imp
 	private static final long serialVersionUID = 1L;
 	
 	private boolean running = false;
-	
+
+	private String filePathWithName =
+			"/Users/praghavan/development/ApacheFlink/project/my-flink-project/src/sample.csv";
+	private FileReader fileReader = null;
+	private BufferedReader buffer;
 
 // End declarations
 
@@ -52,7 +59,10 @@ public class FileReaderSource extends RichParallelSourceFunction<LineOfText> imp
 		ParameterTool parameters = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 		
 //		int max = parameters.getInt("FileReader.max", 30);
-
+		fileReader
+                = new FileReader(filePathWithName);
+		buffer
+                = new BufferedReader(fileReader);
 		// End open logic
 		
 	}
@@ -63,30 +73,35 @@ public class FileReaderSource extends RichParallelSourceFunction<LineOfText> imp
 		// Begin run logic
 
 		running = true;
-		
 		while (running) {
-			
 			synchronized (context.getCheckpointLock()) {
-				
 				// Read a line from the file and emit it using an instance of LineOfText
-				
+				String line = buffer.readLine();
+				if(line == null) {
+					try {Thread.sleep(1000);} catch(Exception ex ) {;}
+				} else {
+					if (!line.contains("Region")) {
+//						System.out.println(line);
+						context.collect(new LineOfText(line));
+					}
+				}
+
 			}
-			
 		}
-		
 		// End run logic
 		
 	}
 
 	@Override
 	public void close() throws Exception {
-
-		// Begin close logic
-
 		super.close();
+		// Begin close logic
+		try {
+			if (buffer != null) { buffer.close();}
+			if (fileReader != null) { fileReader.close();}
+	 	} catch (Throwable t) {  }
 
 		// End close logic
-
 	}
 
 

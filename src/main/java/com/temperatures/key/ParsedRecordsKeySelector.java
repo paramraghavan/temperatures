@@ -2,6 +2,7 @@ package com.temperatures.key;
 
 // Begin imports
 
+import com.temperatures.Helper;
 import org.apache.flink.api.java.functions.KeySelector;
 
 import com.temperatures.cargo.ParsedRecord;
@@ -23,7 +24,7 @@ public class ParsedRecordsKeySelector implements KeySelector<ParsedRecord, Parse
 
 		// Derive and instance of ParsedRecordsKey as the key from value
 
-		return null;
+		return Helper.parseRecordKey(value);
 		
 	// End selector logic
 	

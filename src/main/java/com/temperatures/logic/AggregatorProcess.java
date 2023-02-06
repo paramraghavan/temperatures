@@ -79,10 +79,36 @@ public class AggregatorProcess extends KeyedProcessFunction<ParsedRecordsKey, Pa
 		//     collector.collect( obj );
 
 		// Begin process logic
+		if (value.getRegion().equalsIgnoreCase("Region")) {
+			// skip this entity
+			return;
+		}
 
+		AggregatorProcessKeyState item = state.value();
 
+		if (item == null) {
+			Long timer = context.timerService().currentProcessingTime() + 10*1000l;
+			context.timerService().registerProcessingTimeTimer(timer);
+			item = new AggregatorProcessKeyState();
+			item.setTimer(timer);
+			item.setKey(value.getKey());
+		}
+		item.setCount(item.getCount() + 1);
+		double newSumOfAvgTemp = (item.getAvgTemp() + value.getAvgTemperature());
+		item.setAvgTemp(newSumOfAvgTemp);
+		state.update(item);
+		//collector.collect(new Result(item.getCount(), item.getAvgTemp()/ item.getCount(), item.getKey()));
 		// End process logic
 		
+	}
+
+	@Override
+	public void onTimer(long timestamp, KeyedProcessFunction<ParsedRecordsKey, ParsedRecord, Result>.OnTimerContext ctx, Collector<Result> out) throws Exception {
+		super.onTimer(timestamp, ctx, out);
+		AggregatorProcessKeyState item = state.value();
+		out.collect(new Result(item.getCount(), item.getAvgTemp()/ item.getCount(), item.getKey()));
+		//delete the timer
+		item.setTimer(null);
 	}
 
 

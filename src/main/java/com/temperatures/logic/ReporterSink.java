@@ -3,6 +3,7 @@ package com.temperatures.logic;
 // Begin imports
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.apache.flink.api.common.state.ListState;
 import org.apache.flink.api.common.state.ListStateDescriptor;
@@ -28,7 +29,7 @@ public class ReporterSink extends RichSinkFunction<Result> implements Serializab
 	private static final Logger LOG = LoggerFactory.getLogger(ReporterSink.class);
 
 	private static final long serialVersionUID = 1L;
-
+	private long start, end;
 
 	// End declarations
 	
@@ -40,7 +41,7 @@ public class ReporterSink extends RichSinkFunction<Result> implements Serializab
 	public void open(Configuration config) throws Exception {
 
 		// Begin open logic
-
+		start = System.currentTimeMillis();
 		super.open(config);
 		
 		ParameterTool parameters = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
@@ -56,7 +57,7 @@ public class ReporterSink extends RichSinkFunction<Result> implements Serializab
 
 		// Begin invoke logic
 
-		System.out.println(value.toString());
+		//System.out.println(value.toString());
 
 		// End invoke logic
 		
@@ -66,7 +67,8 @@ public class ReporterSink extends RichSinkFunction<Result> implements Serializab
 	public void close() throws Exception {
 
 		// Begin close logic
-
+		end = System.currentTimeMillis();
+  		System.out.print("Execution time is " + (end - start) / 1000d + " seconds");
 		super.close();
 
 		// End close logic
