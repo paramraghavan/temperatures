@@ -2,6 +2,7 @@ package com.temperatures.logic;
 
 // Begin imports
 
+import com.temperatures.helper.DirectoryWatcher;
 import org.apache.flink.api.common.state.ListState;
 import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -33,15 +34,13 @@ public class FileReaderSource extends RichParallelSourceFunction<LineOfText> imp
 	
 	private boolean running = false;
 
-	private String filePathWithName =
-			"/Users/praghavan/development/ApacheFlink/project/my-flink-project/src/sample.csv";
-	private FileReader fileReader = null;
-	private BufferedReader buffer;
+	private String filePath = null;
 
 // End declarations
 
-	public FileReaderSource() throws Exception {
+	public FileReaderSource(String filePath) throws Exception {
 		super();
+		this.filePath = filePath;
 	}
 
 	@Override
@@ -57,12 +56,8 @@ public class FileReaderSource extends RichParallelSourceFunction<LineOfText> imp
 		super.open(config);
 		
 		ParameterTool parameters = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
-		
+
 //		int max = parameters.getInt("FileReader.max", 30);
-		fileReader
-                = new FileReader(filePathWithName);
-		buffer
-                = new BufferedReader(fileReader);
 		// End open logic
 		
 	}
@@ -71,21 +66,49 @@ public class FileReaderSource extends RichParallelSourceFunction<LineOfText> imp
 	public void run(SourceContext<LineOfText> context) throws Exception {
 
 		// Begin run logic
+		FileReader fileReader = null;
+		BufferedReader buffer = null;
+
+		DirectoryWatcher dw = new DirectoryWatcher(filePath, ".csv");
 
 		running = true;
 		while (running) {
-			synchronized (context.getCheckpointLock()) {
-				// Read a line from the file and emit it using an instance of LineOfText
-				String line = buffer.readLine();
-				if(line == null) {
-					try {Thread.sleep(1000);} catch(Exception ex ) {;}
-				} else {
-					if (!line.contains("Region")) {
-//						System.out.println(line);
-						context.collect(new LineOfText(line));
+			if( dw.hasNext()) {
+				String filePathWithName = dw.next();
+				fileReader = new FileReader(filePathWithName);
+				buffer = new BufferedReader(fileReader);
+
+				//TODO ask Chris purpose of this sync block
+				synchronized (context.getCheckpointLock()) {
+					// Read a line from the file and emit it using an instance of LineOfText
+					String line;
+					while ((line = buffer.readLine()) != null) {
+						if (!line.contains("Region")) {
+							LOG.debug(line);
+							context.collect(new LineOfText(line));
+						}
+					}
+					if (line == null) {
+						// no more lines close file handles
+						try {
+							try {
+								if (buffer != null) {
+									buffer.close();
+								}
+								if (fileReader != null) {
+									fileReader.close();
+								}
+							} catch (Throwable t) {
+							} finally {
+								fileReader = null;
+								buffer = null;
+							}
+							Thread.sleep(1000);
+						} catch (Exception ex) {
+							;
+						}
 					}
 				}
-
 			}
 		}
 		// End run logic
@@ -96,10 +119,6 @@ public class FileReaderSource extends RichParallelSourceFunction<LineOfText> imp
 	public void close() throws Exception {
 		super.close();
 		// Begin close logic
-		try {
-			if (buffer != null) { buffer.close();}
-			if (fileReader != null) { fileReader.close();}
-	 	} catch (Throwable t) {  }
 
 		// End close logic
 	}

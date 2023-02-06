@@ -106,9 +106,17 @@ public class AggregatorProcess extends KeyedProcessFunction<ParsedRecordsKey, Pa
 	public void onTimer(long timestamp, KeyedProcessFunction<ParsedRecordsKey, ParsedRecord, Result>.OnTimerContext ctx, Collector<Result> out) throws Exception {
 		super.onTimer(timestamp, ctx, out);
 		AggregatorProcessKeyState item = state.value();
-		out.collect(new Result(item.getCount(), item.getAvgTemp()/ item.getCount(), item.getKey()));
+		if (item != null) {
+			out.collect(new Result(item.getCount(), item.getAvgTemp() / item.getCount(), item.getKey()));
+			state.clear();
+		} else {
+			System.out.println("No items to collect at this time....");
+		}
 		//delete the timer
 		item.setTimer(null);
+		// add new timet
+		Long timer = ctx.timerService().currentProcessingTime() + 10*1000l;
+		ctx.timerService().registerProcessingTimeTimer(timer);
 	}
 
 

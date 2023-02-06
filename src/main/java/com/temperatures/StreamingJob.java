@@ -102,8 +102,9 @@ public class StreamingJob {
 			
 
 			// FileReader source
-			
-			DataStreamSource<LineOfText> operator_FileReader = see.addSource(new FileReaderSource());
+			//String filePath =	"/Users/praghavan/development/ApacheFlink/project/my-flink-project/src/";
+			String filePath =	"/Users/praghavan/test1/";
+			DataStreamSource<LineOfText> operator_FileReader = see.addSource(new FileReaderSource(filePath));
 			operator_FileReader.uid("FileReader");
 			operator_FileReader.name("FileReader");
 			operator_FileReader.setParallelism(parameter.getInt("FileReader.parallelism", 1));
