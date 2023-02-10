@@ -5,17 +5,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.flink.api.common.state.MapStateDescriptor;
-import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.runtime.state.StateBackend;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
-import org.apache.flink.streaming.api.datastream.BroadcastConnectedStream;
-import org.apache.flink.streaming.api.datastream.BroadcastStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSink;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -104,20 +99,20 @@ public class StreamingJob {
 			// FileReader source
 			//String filePath =	"/Users/praghavan/development/ApacheFlink/project/my-flink-project/src/";
 			String filePath =	"/Users/praghavan/test1/";
-			DataStreamSource<LineOfText> operator_FileReader = see.addSource(new FileReaderSource(filePath));
-			operator_FileReader.uid("FileReader");
-			operator_FileReader.name("FileReader");
-			operator_FileReader.setParallelism(parameter.getInt("FileReader.parallelism", 1));
 
+			DataStreamSource<FileRecord> operator_DirectoryReader = see.addSource(new DirectoryReaderSource(filePath));
+			operator_DirectoryReader.uid("DirectoryReader");
+			operator_DirectoryReader.name("DirectoryReader");
+			operator_DirectoryReader.setParallelism(parameter.getInt("FileReader.parallelism", 1));
+
+			//FileReader Process
+			KeyedStream<FileRecord, FileRecordsKey> streamToFileReader = operator_DirectoryReader.keyBy(new FileRecordsKeySelector());
+     		SingleOutputStreamOperator<LineOfText> operator_FileReader = streamToFileReader.process(new FileReaderProcess());
 
 
 			// Parser process
-
-
-
 			DataStream<LineOfText> streamToParser = operator_FileReader;
- 			SingleOutputStreamOperator<ParsedRecord> operator_Parser = streamToParser.process(new ParserProcess()); 
-
+ 			SingleOutputStreamOperator<ParsedRecord> operator_Parser = streamToParser.process(new ParserProcess());
 
 			operator_Parser.uid("Parser");
 			operator_Parser.name("Parser");
@@ -126,9 +121,6 @@ public class StreamingJob {
 
 
 			// Aggregator process
-
-
-
 			KeyedStream<ParsedRecord, ParsedRecordsKey> streamToAggregator = operator_Parser.keyBy(new ParsedRecordsKeySelector());
      		SingleOutputStreamOperator<Result> operator_Aggregator = streamToAggregator.process(new AggregatorProcess()); 
 

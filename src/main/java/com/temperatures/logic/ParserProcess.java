@@ -58,6 +58,7 @@ public class ParserProcess extends ProcessFunction<LineOfText, ParsedRecord>  {
 
 		// Begin process logic
 		ParsedRecord parsedRecord = Helper.parseRecord(value);
+		System.out.println(this.getClass().getName() + " : " + parsedRecord);
 		collector.collect(parsedRecord);
 		// End process logic
 		

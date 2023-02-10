@@ -57,7 +57,7 @@ public class ReporterSink extends RichSinkFunction<Result> implements Serializab
 
 		// Begin invoke logic
 
-		System.out.println("Reporter: " + value.toString());
+		System.out.println(this.getClass().getName() + " Reporter: " + value.toString());
 
 		// End invoke logic
 		
@@ -68,7 +68,7 @@ public class ReporterSink extends RichSinkFunction<Result> implements Serializab
 
 		// Begin close logic
 		end = System.currentTimeMillis();
-  		System.out.print("Execution time is " + (end - start) / 1000d + " seconds");
+  		System.out.println("Execution time is " + (end - start) / 1000d + " seconds");
 		super.close();
 
 		// End close logic
