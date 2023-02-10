@@ -77,10 +77,10 @@ public class AggregatorProcess extends KeyedProcessFunction<ParsedRecordsKey, Pa
 		AggregatorProcessKeyState item = state.value();
 
 		if (item == null) {
-			//Long timer = context.timerService().currentProcessingTime() + 10*1000l;
-			//context.timerService().registerProcessingTimeTimer(timer);
+			Long timer = context.timerService().currentProcessingTime() + 10*1000l;
+			context.timerService().registerProcessingTimeTimer(timer);
 			item = new AggregatorProcessKeyState();
-//			item.setTimer(timer);
+			item.setTimer(timer);
 			item.setKey(value.getKey());
 		}
 		item.setCount(item.getCount() + 1);
@@ -88,7 +88,7 @@ public class AggregatorProcess extends KeyedProcessFunction<ParsedRecordsKey, Pa
 		item.setAvgTemp(newSumOfAvgTemp);
 		System.out.println(this.getClass().getName() + ": " + item);
 		state.update(item);
-		collector.collect(new Result(item.getCount(), item.getAvgTemp()/ item.getCount(), item.getKey()));
+		//collector.collect(new Result(item.getCount(), item.getAvgTemp()/ item.getCount(), item.getKey()));
 		// End process logic
 		
 	}
@@ -105,7 +105,7 @@ public class AggregatorProcess extends KeyedProcessFunction<ParsedRecordsKey, Pa
 			System.out.println("No items to collect at this time....");
 		}
 		//delete the timer
-		//item.setTimer(null);
+		item.setTimer(null);
 		// add new timet
 		Long timer = context.timerService().currentProcessingTime() + 10*1000l;
 		context.timerService().registerProcessingTimeTimer(timer);
