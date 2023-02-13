@@ -120,7 +120,7 @@ public class FileReaderProcess extends KeyedProcessFunction<FileRecordsKey, File
 						fileReader = null;
 						buffer = null;
 					}
-					Thread.sleep(1000);
+//					Thread.sleep(1000);
 				} catch (Exception ex) {
 					;
 				}

@@ -69,19 +69,18 @@ public class AggregatorProcess extends KeyedProcessFunction<ParsedRecordsKey, Pa
 		//     collector.collect( obj );
 
 		// Begin process logic
-		if (value.getRegion().equalsIgnoreCase("Region")) {
-			// skip this entity
-			return;
-		}
-
 		AggregatorProcessKeyState item = state.value();
 
 		if (item == null) {
-			Long timer = context.timerService().currentProcessingTime() + 10*1000l;
+			Long timer = context.timerService().currentProcessingTime() + 1*1000L;
+//			Long timer = System.currentTimeMillis() + 1*1000L;
 			context.timerService().registerProcessingTimeTimer(timer);
+			System.out.println("Timer Registered");
 			item = new AggregatorProcessKeyState();
 			item.setTimer(timer);
 			item.setKey(value.getKey());
+		} else {
+			System.out.println("Timer  Not Registered");
 		}
 		item.setCount(item.getCount() + 1);
 		double newSumOfAvgTemp = (item.getAvgTemp() + value.getAvgTemperature());
@@ -100,15 +99,19 @@ public class AggregatorProcess extends KeyedProcessFunction<ParsedRecordsKey, Pa
 		if (item != null) {
 			out.collect(new Result(item.getCount(), item.getAvgTemp() / item.getCount(), item.getKey()));
 			System.out.println(this.getClass().getName() + ": " + "publish" );
-			state.clear();
+			//delete the timer
+//			context.timerService().deleteProcessingTimeTimer(item.getTimer());
 		} else {
 			System.out.println("No items to collect at this time....");
 		}
-		//delete the timer
-		item.setTimer(null);
+
+
+		state.clear();
 		// add new timet
-		Long timer = context.timerService().currentProcessingTime() + 10*1000l;
+		Long timer = context.timerService().currentProcessingTime() + 10L;
 		context.timerService().registerProcessingTimeTimer(timer);
+		item = state.value();
+		item.setTimer(timer);
 	}
 
 
