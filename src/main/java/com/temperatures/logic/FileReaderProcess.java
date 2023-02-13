@@ -72,6 +72,9 @@ public class FileReaderProcess extends KeyedProcessFunction<FileRecordsKey, File
 		//     collector.collect( obj );
 
 		// Begin process logic
+		if(value.isEmpty()) {
+			return;
+		}
 		FileReader fileReader = null;
 		BufferedReader buffer = null;
 		String filePathWithName = value.getFileNameWithPath();

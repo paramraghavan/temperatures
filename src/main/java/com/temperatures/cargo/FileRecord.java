@@ -1,6 +1,7 @@
 package com.temperatures.cargo;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class FileRecord {
     public FileRecord(String fileName, String fileNameWithPath) {
@@ -8,6 +9,12 @@ public class FileRecord {
         this.fileNameWithPath = fileNameWithPath;
     }
 
+    public FileRecord(boolean empty) {
+        this.empty = empty;
+        String value= UUID.randomUUID() + "";
+        this.fileNameWithPath = value;
+        this.fileName = value;
+    }
     public FileRecord() {
     }
 
@@ -21,6 +28,16 @@ public class FileRecord {
 
     String fileName;
     String fileNameWithPath;
+
+    public boolean isEmpty() {
+        return empty;
+    }
+
+    public void setEmpty(boolean empty) {
+        this.empty = empty;
+    }
+
+    boolean empty = false;
 
     @Override
     public boolean equals(Object o) {

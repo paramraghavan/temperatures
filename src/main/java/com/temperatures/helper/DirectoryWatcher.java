@@ -6,6 +6,7 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -38,11 +39,16 @@ public class DirectoryWatcher implements Iterator<String>, Iterable<String> {
         if(!itemList.isEmpty()) {
             return true;
         }
+        long timeout = 100L;
         WatchKey key = null;
         try {
-            key = watchService.take();
+//            key = watchService.take();
+            key =  watchService.poll(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+        if ( key == null) {
+            return false;
         }
         for (WatchEvent<?> event : key.pollEvents()) {
             String file = event.context().toString();

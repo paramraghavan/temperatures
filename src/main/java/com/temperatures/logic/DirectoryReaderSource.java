@@ -59,6 +59,7 @@ public class DirectoryReaderSource extends RichParallelSourceFunction<FileRecord
 	public void run(SourceContext<FileRecord> context) throws Exception {
 		DirectoryWatcher dw = new DirectoryWatcher(filePath, ".csv");
 		running = true;
+
 		while (running) {
 			if (dw.hasNext()) {
 				//TODO ask Chris purpose of this sync block
@@ -67,6 +68,10 @@ public class DirectoryReaderSource extends RichParallelSourceFunction<FileRecord
 					System.out.println(this.getClass().getName() + ": " + "filePathWithName: " + filePathWithName);
 					context.collect(new FileRecord(filePathWithName, filePathWithName));
 				}
+			}
+			else {
+				context.collect(new FileRecord(true));
+				Thread.sleep(10);
 			}
 			// End run logic
 		}

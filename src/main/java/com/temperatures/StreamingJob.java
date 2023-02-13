@@ -108,7 +108,7 @@ public class StreamingJob {
 			//FileReader Process
 			KeyedStream<FileRecord, FileRecordsKey> streamToFileReader = operator_DirectoryReader.keyBy(new FileRecordsKeySelector());
      		SingleOutputStreamOperator<LineOfText> operator_FileReader = streamToFileReader.process(new FileReaderProcess());
-
+			operator_FileReader.setParallelism(parameter.getInt("FileReader.parallelism", 1));
 
 			// Parser process
 			DataStream<LineOfText> streamToParser = operator_FileReader;
