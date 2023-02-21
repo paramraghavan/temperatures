@@ -3,12 +3,12 @@ package com.temperatures.key;
 
 import java.util.Objects;
 
-public class FileRecordsKey {
+public class DirectoryRecordsKey {
 	String fileNameWithPath;
 
 	@Override
 	public String toString() {
-		return "FileRecordsKey{" +
+		return "DirectoryRecordsKey{" +
 				"fileNameWithPath='" + fileNameWithPath + '\'' +
 				'}';
 	}
@@ -17,7 +17,7 @@ public class FileRecordsKey {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		FileRecordsKey that = (FileRecordsKey) o;
+		DirectoryRecordsKey that = (DirectoryRecordsKey) o;
 		return Objects.equals(getFileNameWithPath(), that.getFileNameWithPath());
 	}
 
@@ -34,11 +34,11 @@ public class FileRecordsKey {
 		this.fileNameWithPath = fileNameWithPath;
 	}
 
-	public FileRecordsKey(String fileNameWithPath) {
+	public DirectoryRecordsKey(String fileNameWithPath) {
 		this.fileNameWithPath = fileNameWithPath;
 	}
 
-	public FileRecordsKey() {
+	public DirectoryRecordsKey() {
 	
 	}
 

@@ -71,7 +71,7 @@ public class DirectoryReaderSource extends RichParallelSourceFunction<FileRecord
 			}
 			else {
 				context.collect(new FileRecord(true));
-				Thread.sleep(10);
+				Thread.sleep(10*1000L);
 			}
 			// End run logic
 		}

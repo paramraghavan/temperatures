@@ -3,7 +3,7 @@ package com.temperatures.helper;
 import com.temperatures.cargo.FileRecord;
 import com.temperatures.cargo.LineOfText;
 import com.temperatures.cargo.ParsedRecord;
-import com.temperatures.key.FileRecordsKey;
+import com.temperatures.key.DirectoryRecordsKey;
 import com.temperatures.key.ParsedRecordsKey;
 
 public class Helper {
@@ -23,8 +23,8 @@ public class Helper {
                 new ParsedRecordsKey(pr.getRegion(), pr.getCountry(), pr.getState(),pr.getCity(), pr.getMonth(), pr.getYear());
     }
 
-    public static FileRecordsKey parseRecordKey(FileRecord fr) {
+    public static DirectoryRecordsKey parseRecordKey(FileRecord fr) {
             return
-                new FileRecordsKey(fr.getFileNameWithPath());
+                new DirectoryRecordsKey(fr.getFileNameWithPath());
     }
 }

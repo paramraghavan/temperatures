@@ -11,7 +11,7 @@ public class FileRecord {
 
     public FileRecord(boolean empty) {
         this.empty = empty;
-        String value= UUID.randomUUID() + "";
+        String value= "dummy";
         this.fileNameWithPath = value;
         this.fileName = value;
     }

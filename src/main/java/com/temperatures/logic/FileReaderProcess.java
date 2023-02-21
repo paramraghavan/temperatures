@@ -4,11 +4,7 @@ package com.temperatures.logic;
 
 import com.temperatures.cargo.FileRecord;
 import com.temperatures.cargo.LineOfText;
-import com.temperatures.cargo.ParsedRecord;
-import com.temperatures.cargo.Result;
-import com.temperatures.key.FileRecordsKey;
-import com.temperatures.key.ParsedRecordsKey;
-import com.temperatures.state.AggregatorProcessKeyState;
+import com.temperatures.key.DirectoryRecordsKey;
 import com.temperatures.state.FileProcessKeyState;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
@@ -25,7 +21,7 @@ import java.io.FileReader;
 
 // End imports
 
-public class FileReaderProcess extends KeyedProcessFunction<FileRecordsKey, FileRecord, LineOfText>  {
+public class FileReaderProcess extends KeyedProcessFunction<DirectoryRecordsKey, FileRecord, LineOfText>  {
 
 // Begin declarations
 
@@ -65,7 +61,7 @@ public class FileReaderProcess extends KeyedProcessFunction<FileRecordsKey, File
 
 	@Override
 	public void processElement(FileRecord value,
-							   KeyedProcessFunction<FileRecordsKey, FileRecord, LineOfText>.Context context,
+							   KeyedProcessFunction<DirectoryRecordsKey, FileRecord, LineOfText>.Context context,
 							   Collector<LineOfText> out) throws Exception {
 		// Emit objects using:
 		//
@@ -73,6 +69,8 @@ public class FileReaderProcess extends KeyedProcessFunction<FileRecordsKey, File
 
 		// Begin process logic
 		if(value.isEmpty()) {
+			String line = "dummy,dummy,,dummy,1,1,1970,00.0";
+			out.collect(new LineOfText(line));
 			return;
 		}
 		FileReader fileReader = null;

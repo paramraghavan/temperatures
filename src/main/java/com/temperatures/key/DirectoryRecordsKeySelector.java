@@ -3,13 +3,12 @@ package com.temperatures.key;
 // Begin imports
 
 import com.temperatures.cargo.FileRecord;
-import com.temperatures.cargo.ParsedRecord;
 import com.temperatures.helper.Helper;
 import org.apache.flink.api.java.functions.KeySelector;
 
 // End imports
 
-public class FileRecordsKeySelector implements KeySelector<FileRecord, FileRecordsKey> {
+public class DirectoryRecordsKeySelector implements KeySelector<FileRecord, DirectoryRecordsKey> {
 
 	// Begin declarations
 
@@ -18,7 +17,7 @@ public class FileRecordsKeySelector implements KeySelector<FileRecord, FileRecor
 	// End declarations
 
 	@Override
-	public FileRecordsKey getKey(FileRecord value) throws Exception {
+	public DirectoryRecordsKey getKey(FileRecord value) throws Exception {
 
 	// Begin selector logic
 
