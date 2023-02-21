@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.flink.api.java.io.TextInputFormat;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.runtime.state.StateBackend;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSink;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -22,6 +22,7 @@ import com.temperatures.cargo.*;
 import com.temperatures.key.*;
 import com.temperatures.logic.*;
 
+import org.apache.flink.streaming.api.functions.source.FileProcessingMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,30 +100,31 @@ public class StreamingJob {
 			// FileReader source
 			//String filePath =	"/Users/praghavan/development/ApacheFlink/project/my-flink-project/src/";
 			String filePath =	"/Users/praghavan/test1/";
+            //Define the text input format based on the directory
+            TextInputFormat auditFormat = new TextInputFormat(
+                    new org.apache.flink.core.fs.Path(filePath));
 
-			DataStreamSource<FileRecord> operator_DirectoryReader = see.addSource(new DirectoryReaderSource(filePath));
-			operator_DirectoryReader.uid("DirectoryReader");
-			operator_DirectoryReader.name("DirectoryReader");
-			operator_DirectoryReader.setParallelism(parameter.getInt("FileReader.parallelism", 1));
+            //Create a Datastream based on the directory
+            DataStream<String> operator_strStreamToRecordParser
+                        = see.readFile(auditFormat,
+                            filePath,    //Director to monitor
+                            FileProcessingMode.PROCESS_CONTINUOUSLY,
+                            1000); //monitor interval
 
-			//FileReader Process
-			KeyedStream<FileRecord, DirectoryRecordsKey> streamToFileReader = operator_DirectoryReader.keyBy(new DirectoryRecordsKeySelector());
-     		SingleOutputStreamOperator<LineOfText> operator_FileReader = streamToFileReader.process(new FileReaderProcess());
-			operator_FileReader.setParallelism(parameter.getInt("FileReader.parallelism", 1));
-
+			SingleOutputStreamOperator<LineOfText> operator_LineOfTextStream= operator_strStreamToRecordParser.process(new LineOfTextParserProcess());
+			operator_LineOfTextStream.uid("LineOfTextStream");
+			operator_LineOfTextStream.name("LineOfTextStream");
 
 			// Parser process
-			DataStream<LineOfText> streamToParser = operator_FileReader;
- 			SingleOutputStreamOperator<ParsedRecord> operator_Parser = streamToParser.process(new ParserProcess());
+ 			SingleOutputStreamOperator<ParsedRecord> operator_ParserParseRecordStream = operator_LineOfTextStream.process(new ParserProcess());
 
-			operator_Parser.uid("Parser");
-			operator_Parser.name("Parser");
-			operator_Parser.setParallelism(parameter.getInt("Parser.parallelism", 1));
-
+			operator_ParserParseRecordStream.uid("Parser");
+			operator_ParserParseRecordStream.name("Parser");
+			operator_ParserParseRecordStream.setParallelism(parameter.getInt("Parser.parallelism", 1));
 
 
 			// Aggregator process
-			KeyedStream<ParsedRecord, ParsedRecordsKey> streamToAggregator = operator_Parser.keyBy(new ParsedRecordsKeySelector());
+			KeyedStream<ParsedRecord, ParsedRecordsKey> streamToAggregator = operator_ParserParseRecordStream.keyBy(new ParsedRecordsKeySelector());
      		SingleOutputStreamOperator<Result> operator_Aggregator = streamToAggregator.process(new AggregatorProcess()); 
 
 
