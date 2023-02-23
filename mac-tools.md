@@ -1,0 +1,2 @@
+- ruler on mac, Shottr 
+- PhotoScapeX
