@@ -1,2 +1,4 @@
 - ruler on mac, Shottr 
 - PhotoScapeX
+- displaylink manager - for docking statation
+- vlc - mp3/mp4 player
